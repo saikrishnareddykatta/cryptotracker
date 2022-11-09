@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
-import Coin from "./components/Coin";
-import axios from "axios";
+import React, { useEffect, useState, Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import "./App.css";
+import ErrorFallback from "./components/ErrorBoundary";
+import axios from "axios";
+
+const Coin = React.lazy(() => import("./components/Coin"));
 
 function App() {
   const [coins, setCoins] = useState([]);
@@ -48,20 +51,30 @@ function App() {
         </form>
       </div>
       <div className="coinsContainer">
-        {!errorFlag &&
-          filteredCoins.map((coin) => (
-            <Coin
-              id={coin.id}
-              key={coin.id}
-              imageSrc={coin.image}
-              name={coin.name}
-              symbol={coin.symbol}
-              price={coin.current_price}
-              marketCap={coin.market_cap}
-              volume={coin.total_volume}
-              priceChange={coin.price_change_percentage_24h}
-            />
-          ))}
+        <ErrorBoundary
+          FallbackComponent={ErrorFallback}
+          onReset={() => {
+            getData();
+          }}
+          className="errorBoundary"
+        >
+          <Suspense fallback={<div>Loading...</div>}>
+            {!errorFlag &&
+              filteredCoins.map((coin) => (
+                <Coin
+                  id={coin.id}
+                  key={coin.id}
+                  imageSrc={coin.image}
+                  name={coin.name}
+                  symbol={coin.symbol}
+                  price={coin.current_price}
+                  marketCap={coin.market_cap}
+                  volume={coin.total_volume}
+                  priceChange={coin.price_change_percentage_24h}
+                />
+              ))}
+          </Suspense>
+        </ErrorBoundary>
       </div>
     </div>
   );
