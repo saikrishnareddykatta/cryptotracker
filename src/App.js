@@ -39,7 +39,7 @@ function App() {
       <div className="header">
         <h1 className="brand">
           <i className="fa-regular fa-moon"> </i>
-          CoinMoon
+          Coin Moon
         </h1>
         <form>
           <input
